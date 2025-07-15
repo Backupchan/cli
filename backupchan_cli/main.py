@@ -1,4 +1,4 @@
-from .commands import config, target
+from .commands import config, target, backup
 from .config import Config, ConfigException
 from .utility import failure, NO_CONFIG_MESSAGE
 from backupchan import API
@@ -9,12 +9,16 @@ def main():
     subparsers = parser.add_subparsers(dest="command")
 
     config_parser = subparsers.add_parser("config")
-    config_sub = config_parser.add_subparsers(dest="subcommand", help="Commands for viewing and editing configuration")
+    config_sub = config_parser.add_subparsers(dest="subcommand", help="View and edit configuration")
     config.setup_subcommands(config_sub)
 
     target_parser = subparsers.add_parser("target")
-    target_sub = target_parser.add_subparsers(dest="subcommand", help="Commands for viewing and managing targets")
+    target_sub = target_parser.add_subparsers(dest="subcommand", help="View and manage targets")
     target.setup_subcommands(target_sub)
+
+    backup_parser = subparsers.add_parser("backup")
+    backup_sub = backup_parser.add_subparsers(dest="subcommand", help="Add and manage backups")
+    backup.setup_subcommands(backup_sub)
 
     app_config = Config()
     try:

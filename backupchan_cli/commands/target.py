@@ -1,5 +1,4 @@
 import requests
-from backupchan_cli.config import Config
 from backupchan_cli import utility
 from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, BackupRecycleAction
 
