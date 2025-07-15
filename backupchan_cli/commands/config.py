@@ -42,7 +42,7 @@ def interactive_new_config(config: Config):
     port = input("Port: ").strip().lower()
     if not utility.is_parsable_int(port):
         utility.failure("Port must be an integer number")
-    api_key = input("API key: ").strip()
+    api_key = input("API key (leave blank if auth is disabled): ").strip()
 
     config.host = host
     config.port = port
