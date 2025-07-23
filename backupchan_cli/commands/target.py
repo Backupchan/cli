@@ -64,6 +64,7 @@ def do_list(args, _, api: API):
 # backupchan target view
 #
 
+# TODO function for printing target/backup
 # TODO is it necessary to pass config to every subcommand?
 def do_view(args, _, api: API):
     try:
@@ -80,7 +81,10 @@ def do_view(args, _, api: API):
     print(f"Location: {target.location}")
     print(f"Name template: {target.name_template}")
     print()
-    print("Backups (pass -r to view recycled ones too):")
+    if args.include_recycled:
+        print("Backups:")
+    else:
+        print("Backups (pass -r to view recycled ones too):")
     print()
 
     if not args.include_recycled:
@@ -92,4 +96,9 @@ def do_view(args, _, api: API):
         print(f" {spaces} | Created at: {backup.pretty_created_at()}")
         if args.include_recycled:
             print(f" {spaces} | Recycled: {'Yes' if backup.is_recycled else 'No'}")
+        print(f" {spaces} | Size: {utility.humanread_file_size(backup.filesize)}")
+        if backup.manual:
+            print(f" {spaces} | Uploaded manually")
+        else:
+            print(f" {spaces} | Uploaded automatically")
         print("=========")

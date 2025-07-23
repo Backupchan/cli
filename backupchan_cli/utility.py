@@ -15,3 +15,14 @@ def failure(message: str):
 
 def failure_network():
     failure("Failed to connect to server")
+
+SIZE_UNITS = [
+    "B", "KiB", "MiB", "GiB", "TiB"
+]
+
+def humanread_file_size(size: float):
+    i = 0
+    while size > 1024:
+        size /= 1024
+        i += 1
+    return f"{size:.2f} {SIZE_UNITS[i]}"
