@@ -129,6 +129,10 @@ def do_view(args, _, api: API):
             print(f" {spaces} | Uploaded automatically")
         print("=========")
 
+#
+# backupchan target new
+#
+
 def do_new(args, _, api: API):
     utility.required_args(args, "name", "type", "recycle_criteria", "location", "name_template")
 
@@ -154,6 +158,10 @@ def do_new(args, _, api: API):
         utility.failure(f"Failed to create new target: {str(exc)}")
 
     print(f"Created new target. ID: {target_id}")
+
+#
+# backupchan target delete
+#
 
 def do_delete(args, _, api: API):
     delete_files = args.delete_files
