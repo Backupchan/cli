@@ -15,7 +15,7 @@ def setup_subcommands(subparser):
     view_cmd.add_argument("--include-recycled", "-r", action="store_true", help="Include recycled backups too")
     view_cmd.set_defaults(func=do_view)
 
-    new_cmd = subparser.add_parser("new", help="Create a neew target")
+    new_cmd = subparser.add_parser("new", help="Create a new target")
     new_cmd.add_argument("--name", "-n", type=str, help="Name of the new target")
     new_cmd.add_argument("--type", "-t", type=lambda t: BackupType(t), choices=list(BackupType), help="Type of the new target")
     new_cmd.add_argument("--recycle-criteria", "-c", type=lambda c: BackupRecycleCriteria(c), choices=list(BackupRecycleCriteria), help="Recycle criteria")
@@ -23,8 +23,13 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("--recycle-action", "-a", type=lambda a: BackupRecycleAction(a), choices=list(BackupRecycleAction), help="Recycle action")
     new_cmd.add_argument("--location", "-l", type=str, help="Location of the new target")
     new_cmd.add_argument("--name-template", "-m", type=str, help="Name template for backups. Must include either $I or $D, or both.")
-    new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="Pass this to enable deduplication")
+    new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="Enable deduplication")
     new_cmd.set_defaults(func=do_new)
+
+    delete_cmd = subparser.add_parser("delete", help="Delete an existing target")
+    delete_cmd.add_argument("id", type=str, help="ID of the target to delete")
+    delete_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
+    delete_cmd.set_defaults(func=do_delete)
 
 #
 # Value to human-readable string conversions and lookup tables
@@ -139,3 +144,9 @@ def do_new(args, _, api: API):
 
     target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate)
     print(f"Created new target. ID: {target_id}")
+
+def do_delete(args, _, api: API):
+    delete_files = args.delete_files
+
+    api.delete_target(args.id, delete_files)
+    print("Target deleted.")
