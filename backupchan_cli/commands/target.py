@@ -15,6 +15,17 @@ def setup_subcommands(subparser):
     view_cmd.add_argument("--include-recycled", "-r", action="store_true", help="Include recycled backups too")
     view_cmd.set_defaults(func=do_view)
 
+    new_cmd = subparser.add_parser("new", help="Create a neew target")
+    new_cmd.add_argument("--name", "-n", type=str, help="Name of the new target")
+    new_cmd.add_argument("--type", "-t", type=lambda t: BackupType(t), choices=list(BackupType), help="Type of the new target")
+    new_cmd.add_argument("--recycle-criteria", "-c", type=lambda c: BackupRecycleCriteria(c), choices=list(BackupRecycleCriteria), help="Recycle criteria")
+    new_cmd.add_argument("--recycle-value", "-v", type=int, help="Recycle value (optional if criteria is none)")
+    new_cmd.add_argument("--recycle-action", "-a", type=lambda a: BackupRecycleAction(a), choices=list(BackupRecycleAction), help="Recycle action")
+    new_cmd.add_argument("--location", "-l", type=str, help="Location of the new target")
+    new_cmd.add_argument("--name-template", "-m", type=str, help="Name template for backups. Must include either $I or $D, or both.")
+    new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="Pass this to enable deduplication")
+    new_cmd.set_defaults(func=do_new)
+
 #
 # Value to human-readable string conversions and lookup tables
 #
@@ -83,7 +94,11 @@ def do_view(args, _, api: API):
     print(f"Name template: {target.name_template}")
     print(f"Deduplication {'on' if target.deduplicate else 'off'}")
     print()
-    if args.include_recycled:
+
+    if len(backups) == 0:
+        print("This target has no backups.")
+        return
+    elif args.include_recycled:
         print("Backups:")
     else:
         print("Backups (pass -r to view recycled ones too):")
@@ -104,3 +119,23 @@ def do_view(args, _, api: API):
         else:
             print(f" {spaces} | Uploaded automatically")
         print("=========")
+
+def do_new(args, _, api: API):
+    utility.required_args(args, "name", "type", "recycle_criteria", "location", "name_template")
+
+    name = args.name
+    target_type = args.type
+    recycle_criteria = args.recycle_criteria
+    location = args.location
+    name_template = args.name_template
+    deduplicate = args.deduplicate
+
+    recycle_value = 0
+    recycle_action = BackupRecycleAction.RECYCLE
+    if args.recycle_criteria != BackupRecycleCriteria.NONE:
+        utility.required_args(args, "recycle_value", "recycle_action")
+        recycle_value = args.recycle_value
+        recycle_action = args.recycle_action
+
+    target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate)
+    print(f"Created new target. ID: {target_id}")

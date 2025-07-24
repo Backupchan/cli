@@ -26,3 +26,8 @@ def humanread_file_size(size: float):
         size /= 1024
         i += 1
     return f"{size:.2f} {SIZE_UNITS[i]}"
+
+def required_args(args_object, *args):
+    for arg in args:
+        if not getattr(args_object, arg):
+            failure(f"Argument '{arg}' is required")
