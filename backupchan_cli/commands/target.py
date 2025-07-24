@@ -146,11 +146,22 @@ def do_new(args, _, api: API):
         recycle_value = args.recycle_value
         recycle_action = args.recycle_action
 
-    target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate)
+    try:
+        target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to create new target: {str(exc)}")
+
     print(f"Created new target. ID: {target_id}")
 
 def do_delete(args, _, api: API):
     delete_files = args.delete_files
 
-    api.delete_target(args.id, delete_files)
+    try:
+        api.delete_target(args.id, delete_files)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to delete target: {str(exc)}")
     print("Target deleted.")
