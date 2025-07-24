@@ -58,6 +58,7 @@ def do_list(args, _, api: API):
             print(f" {spaces} | Recycle action: {HR_RECYCLE_ACTIONS[target.recycle_action]}")
         print(f" {spaces} | Location: {target.location}")
         print(f" {spaces} | Name template: {target.name_template}")
+        print(f" {spaces} | Deduplication {'on' if target.deduplicate else 'off'}")
         print("=========")
 
 #
@@ -80,6 +81,7 @@ def do_view(args, _, api: API):
         print(f"Recycle action: {HR_RECYCLE_ACTIONS[target.recycle_action]}")
     print(f"Location: {target.location}")
     print(f"Name template: {target.name_template}")
+    print(f"Deduplication {'on' if target.deduplicate else 'off'}")
     print()
     if args.include_recycled:
         print("Backups:")
