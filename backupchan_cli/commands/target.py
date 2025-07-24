@@ -1,6 +1,6 @@
 import requests
 from backupchan_cli import utility
-from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, BackupRecycleAction
+from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, BackupRecycleAction, BackupchanAPIError
 
 #
 #
@@ -88,6 +88,10 @@ def do_view(args, _, api: API):
         target, backups = api.get_target(args.id)
     except requests.exceptions.ConnectionError:
         utility.failure_network()
+    except BackupchanAPIError as exc:
+        if exc.status_code == 404:
+            utility.failure("Target not found")
+        raise
 
     print(f"Name: {target.name}")
     print(f"ID: {target.id}")
