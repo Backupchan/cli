@@ -1,10 +1,32 @@
 import requests
 from backupchan_cli import utility
+from .backup import print_backup
 from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, BackupRecycleAction, BackupchanAPIError
+
+#
+# Utilities
+#
+
+def print_target(target: BackupTarget, spaces: str | None, index: int):
+    prefix = "" if spaces is None else f" {spaces} | "
+    if spaces is None:
+        print("Name: {target.name}")
+    else:
+        print(f" {index + 1}. |  {target.name}")
+    print(f"{prefix}ID: {target.id}")
+    print(f"{prefix}Type: {HR_TYPES[target.target_type]}")
+    print(f"{prefix}Recycle criteria: {hr_recycle_criteria(target)}")
+    if target.recycle_criteria != BackupRecycleCriteria.NONE:
+        print(f"{prefix}Recycle action: {HR_RECYCLE_ACTIONS[target.recycle_action]}")
+    print(f"{prefix}Location: {target.location}")
+    print(f"{prefix}Name template: {target.name_template}")
+    print(f"{prefix}Deduplication {'on' if target.deduplicate else 'off'}")
+    print("=========")
 
 #
 #
 #
+
 
 def setup_subcommands(subparser):
     #
@@ -106,22 +128,12 @@ def do_list(args, _, api: API):
 
     for index, target in enumerate(targets):
         spaces = " " * (len(str(index + 1)) + 1)
-        print(f" {index + 1}. |  {target.name}")
-        print(f" {spaces} | ID: {target.id}")
-        print(f" {spaces} | Type: {HR_TYPES[target.target_type]}")
-        print(f" {spaces} | Recycle criteria: {hr_recycle_criteria(target)}")
-        if target.recycle_criteria != BackupRecycleCriteria.NONE:
-            print(f" {spaces} | Recycle action: {HR_RECYCLE_ACTIONS[target.recycle_action]}")
-        print(f" {spaces} | Location: {target.location}")
-        print(f" {spaces} | Name template: {target.name_template}")
-        print(f" {spaces} | Deduplication {'on' if target.deduplicate else 'off'}")
-        print("=========")
+        print_target(target, spaces, index)
 
 #
 # backupchan target view
 #
 
-# TODO function for printing target/backup
 # TODO is it necessary to pass config to every subcommand?
 def do_view(args, _, api: API):
     try:
@@ -133,16 +145,7 @@ def do_view(args, _, api: API):
             utility.failure("Target not found")
         raise
 
-    print(f"Name: {target.name}")
-    print(f"ID: {target.id}")
-    print(f"Type: {HR_TYPES[target.target_type]}")
-    print(f"Recycle criteria: {hr_recycle_criteria(target)}")
-    if target.recycle_criteria != BackupRecycleCriteria.NONE:
-        print(f"Recycle action: {HR_RECYCLE_ACTIONS[target.recycle_action]}")
-    print(f"Location: {target.location}")
-    print(f"Name template: {target.name_template}")
-    print(f"Deduplication {'on' if target.deduplicate else 'off'}")
-    print()
+    print_target(target, None, 0)
 
     if len(backups) == 0:
         print("This target has no backups.")
@@ -158,16 +161,7 @@ def do_view(args, _, api: API):
 
     for index, backup in enumerate(backups):
         spaces = " " * (len(str(index + 1)) + 1)
-        print(f" {index + 1}. | ID: {backup.id}")
-        print(f" {spaces} | Created at: {backup.pretty_created_at()}")
-        if args.include_recycled:
-            print(f" {spaces} | Recycled: {'Yes' if backup.is_recycled else 'No'}")
-        print(f" {spaces} | Size: {utility.humanread_file_size(backup.filesize)}")
-        if backup.manual:
-            print(f" {spaces} | Uploaded manually")
-        else:
-            print(f" {spaces} | Uploaded automatically")
-        print("=========")
+        print_backup(backup, spaces, args.include_recycled, index)
 
 #
 # backupchan target new
