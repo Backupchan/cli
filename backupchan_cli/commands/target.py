@@ -68,7 +68,7 @@ def setup_subcommands(subparser):
 
     delete_backups_cmd = subparser.add_parser("deletebackups", help="Delete all backups of a target")
     delete_backups_cmd.add_argument("id", type=str, help="ID of the target to delete backups of")
-    delete_backups_cmd.add_argument("--delete-files", action="store_true", "Delete backup files as well")
+    delete_backups_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
     delete_backups_cmd.set_defaults(func=do_delete_backups)
 
 #
