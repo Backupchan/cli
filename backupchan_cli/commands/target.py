@@ -126,6 +126,10 @@ def do_list(args, _, api: API):
     except requests.exceptions.ConnectionError:
         utility.failure_network()
 
+    if not targets:
+        print("There are no targets.")
+        return
+
     for index, target in enumerate(targets):
         spaces = " " * (len(str(index + 1)) + 1)
         print_target(target, spaces, index)
