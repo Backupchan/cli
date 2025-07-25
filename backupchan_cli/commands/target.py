@@ -7,13 +7,25 @@ from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, Bac
 #
 
 def setup_subcommands(subparser):
+    #
+    #
+    #
+
     list_cmd = subparser.add_parser("list", help="List all targets")
     list_cmd.set_defaults(func=do_list)
+
+    #
+    #
+    #
 
     view_cmd = subparser.add_parser("view", help="View a specific target")
     view_cmd.add_argument("id", type=str, help="ID of the target to view")
     view_cmd.add_argument("--include-recycled", "-r", action="store_true", help="Include recycled backups too")
     view_cmd.set_defaults(func=do_view)
+
+    #
+    #
+    #
 
     new_cmd = subparser.add_parser("new", help="Create a new target")
     new_cmd.add_argument("--name", "-n", type=str, help="Name of the new target")
@@ -26,10 +38,18 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="Enable deduplication")
     new_cmd.set_defaults(func=do_new)
 
+    #
+    #
+    #
+
     delete_cmd = subparser.add_parser("delete", help="Delete an existing target")
     delete_cmd.add_argument("id", type=str, help="ID of the target to delete")
     delete_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
     delete_cmd.set_defaults(func=do_delete)
+
+    #
+    #
+    #
 
     edit_cmd = subparser.add_parser("edit", help="Edit an existing target")
     edit_cmd.add_argument("id", type=str, help="ID of the target to edit")
@@ -41,6 +61,15 @@ def setup_subcommands(subparser):
     edit_cmd.add_argument("--name-template", "-m", type=str, help="New name template of the target")
     edit_cmd.add_argument("--toggle-deduplication", "-d", action="store_true", help="Toggle target deduplication")
     edit_cmd.set_defaults(func=do_edit)
+
+    #
+    #
+    #
+
+    delete_backups_cmd = subparser.add_parser("deletebackups", help="Delete all backups of a target")
+    delete_backups_cmd.add_argument("id", type=str, help="ID of the target to delete backups of")
+    delete_backups_cmd.add_argument("--delete-files", action="store_true", "Delete backup files as well")
+    delete_backups_cmd.set_defaults(func=do_delete_backups)
 
 #
 # Value to human-readable string conversions and lookup tables
@@ -219,3 +248,18 @@ def do_edit(args, _, api: API):
         utility.failure(f"Failed to edit target: {str(exc)}")
 
     print("Target edited.")
+
+#
+# backupchan target deletebackups
+#
+
+def do_delete_backups(args, _, api: API):
+    delete_files = args.delete_files
+
+    try:
+        api.delete_target_backups(args.id, delete_files)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to delete target backups: {str(exc)}")
+    print("Target backups deleted.")
