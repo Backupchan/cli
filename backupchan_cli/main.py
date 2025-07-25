@@ -1,4 +1,4 @@
-from .commands import config, target, backup, log
+from .commands import config, target, backup, log, recyclebin
 from .config import Config, ConfigException
 from .utility import failure, NO_CONFIG_MESSAGE
 from backupchan import API
@@ -23,6 +23,10 @@ def main():
     log_parser = subparsers.add_parser("log")
     log_sub = log_parser.add_subparsers(dest="subcommand", help="View the execution log")
     log.setup_subcommands(log_sub)
+
+    recycle_bin_parser = subparsers.add_parser("recyclebin")
+    recycle_bin_sub = recycle_bin_parser.add_subparsers(dest="subcommand", help="View and clear the recycle bin")
+    recyclebin.setup_subcommands(recycle_bin_sub)
 
     app_config = Config()
     try:
