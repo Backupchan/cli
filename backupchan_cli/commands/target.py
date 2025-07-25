@@ -31,6 +31,17 @@ def setup_subcommands(subparser):
     delete_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
     delete_cmd.set_defaults(func=do_delete)
 
+    edit_cmd = subparser.add_parser("edit", help="Edit an existing target")
+    edit_cmd.add_argument("id", type=str, help="ID of the target to edit")
+    edit_cmd.add_argument("--name", "-n", type=str, help="New name of the target")
+    edit_cmd.add_argument("--recycle-criteria", "-c", type=lambda c: BackupRecycleCriteria(c), choices=list(BackupRecycleCriteria), help="New recycle criteria")
+    edit_cmd.add_argument("--recycle-value", "-v", type=int, help="New recycle value")
+    edit_cmd.add_argument("--recycle-action", "-a", type=lambda a: BackupRecycleAction(a), choices=list(BackupRecycleAction), help="New recycle action")
+    edit_cmd.add_argument("--location", "-l", type=str, help="New location of the target")
+    edit_cmd.add_argument("--name-template", "-m", type=str, help="New name template of the target")
+    edit_cmd.add_argument("--toggle-deduplication", "-d", action="store_true", help="Toggle target deduplication")
+    edit_cmd.set_defaults(func=do_edit)
+
 #
 # Value to human-readable string conversions and lookup tables
 #
@@ -173,3 +184,38 @@ def do_delete(args, _, api: API):
     except BackupchanAPIError as exc:
         utility.failure(f"Failed to delete target: {str(exc)}")
     print("Target deleted.")
+
+#
+# backupchan target edit
+#
+
+def do_edit(args, _, api: API):
+    target_id = args.id
+
+    try:
+        target = api.get_target(target_id)[0]
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        if exc.status_code == 404:
+            utility.failure("Target not found")
+        raise
+
+    name = args.name or target.name
+    recycle_criteria = args.recycle_criteria or target.recycle_criteria
+    recycle_value = args.recycle_value or target.recycle_value
+    recycle_action = args.recycle_action or target.recycle_action
+    location = args.location or target.location
+    name_template = args.name_template or target.name_template
+    deduplicate = target.deduplicate
+    if args.toggle_deduplication:
+        deduplicate = not deduplicate
+
+    try:
+        api.edit_target(target_id, name, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to edit target: {str(exc)}")
+
+    print("Target edited.")
