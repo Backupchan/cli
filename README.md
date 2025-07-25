@@ -8,7 +8,8 @@ This is the command-line interface program for interacting with a Backup-chan se
 pip install .
 ```
 
-You can also run right from source if you don't feel like installing the program:
+You can also run right from source if you don't feel like installing the program. In
+this case, you'll have to install dependencies manually.
 
 ```bash
 ./cli.py
