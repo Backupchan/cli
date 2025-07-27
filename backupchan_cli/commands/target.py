@@ -10,7 +10,7 @@ from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, Bac
 def print_target(target: BackupTarget, spaces: str | None, index: int):
     prefix = "" if spaces is None else f" {spaces} | "
     if spaces is None:
-        print("Name: {target.name}")
+        print(f"Name: {target.name}")
     else:
         print(f" {index + 1}. |  {target.name}")
     if target.alias is not None:
