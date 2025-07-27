@@ -3,6 +3,7 @@ import sys
 import platformdirs
 import keyring
 import os
+from pathlib import Path
 
 class ConfigException(Exception):
     pass
@@ -30,10 +31,7 @@ class Config:
         self.api_key = None
 
         if write:
-            try:
-                keyring.delete_password("backupchan", "api_key")
-            except keyring.errors.PasswordDeleteError:
-                pass
+            self.delete_api_key()
             if os.path.exists(CONFIG_FILE_PATH):
                 os.remove(CONFIG_FILE_PATH)
 
@@ -51,9 +49,8 @@ class Config:
     def save_config(self):
         if self.is_incomplete():
             raise ConfigException("Cannot save incomplete config")
-
-        if not os.path.exists(CONFIG_FILE_DIR):
-            os.mkdir(CONFIG_FILE_DIR)
+        
+        Path(CONFIG_FILE_DIR).mkdir(exist_ok=True, parents=True)
 
         config_dict = {
             "host": self.host,
@@ -63,4 +60,13 @@ class Config:
         with open(CONFIG_FILE_PATH, "w") as config_file:
             json.dump(config_dict, config_file)
 
+        self.save_api_key()
+
+    def delete_api_key(self):
+        try:
+            keyring.delete_password("backupchan", "api_key")
+        except keyring.errors.PasswordDeleteError:
+            pass
+    
+    def save_api_key(self):
         keyring.set_password("backupchan", "api_key", self.api_key)
