@@ -1,5 +1,9 @@
 # Backup-chan CLI
 
+![PyPI - License](https://img.shields.io/pypi/l/backupchan-cli)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/backupchan-cli)
+![PyPI - Version](https://img.shields.io/pypi/v/backupchan-cli)
+
 This is the command-line interface program for interacting with a Backup-chan server.
 
 ## Installing

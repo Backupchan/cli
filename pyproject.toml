@@ -1,6 +1,6 @@
 [project]
 name = "backupchan-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "Command-line interface for interacting with Backup-chan."
 authors = [
     { name = "Moltony", email = "koronavirusnyj@gmail.com" }
@@ -24,6 +24,11 @@ classifiers = [
     "Topic :: System :: Archiving :: Backup",
     "Typing :: Typed"
 ]
+
+[project.urls]
+Homepage = "https://github.com/Backupchan/cli"
+Repository = "https://github.com/Backupchan/cli.git"
+Issues = "https://github.com/Backupchan/cli/issues"
 
 [project.scripts]
 backupchan = "backupchan_cli.main:main"
