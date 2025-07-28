@@ -11,6 +11,9 @@ dependencies = [
     "platformdirs"
 ]
 
+readme = "README.md"
+license = {text = "BSD-3-Clause"}
+
 [project.scripts]
 backupchan = "backupchan_cli.main:main"
 
