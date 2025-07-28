@@ -22,7 +22,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: System :: Archiving :: Backup",
-    "Topic :: Software Development :: Libraries",
     "Typing :: Typed"
 ]
 
