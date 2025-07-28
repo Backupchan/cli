@@ -36,6 +36,7 @@ def setup_subcommands(subparser):
     #
 
     list_cmd = subparser.add_parser("list", help="List all targets")
+    list_cmd.add_argument("--page", "-p", type=int, default=1, help="Page in the list")
     list_cmd.set_defaults(func=do_list)
 
     #
@@ -127,9 +128,11 @@ def hr_recycle_criteria(target: BackupTarget) -> str:
 
 def do_list(args, _, api: API):
     try:
-        targets = api.list_targets()
+        targets = api.list_targets(args.page)
     except requests.exceptions.ConnectionError:
         utility.failure_network()
+
+    print(f"Showing page {args.page}\n")
 
     if not targets:
         print("There are no targets.")
