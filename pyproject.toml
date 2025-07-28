@@ -14,6 +14,18 @@ dependencies = [
 readme = "README.md"
 license = {text = "BSD-3-Clause"}
 
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: System :: Archiving :: Backup",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed"
+]
+
 [project.scripts]
 backupchan = "backupchan_cli.main:main"
 
