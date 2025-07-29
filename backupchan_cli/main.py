@@ -1,6 +1,6 @@
 from .commands import config, target, backup, log, recyclebin, stats
-from .config import Config, ConfigException
 from .utility import failure, NO_CONFIG_MESSAGE
+from backupchan_config import Config, ConfigException
 from backupchan import API
 import argparse
 

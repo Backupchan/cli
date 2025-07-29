@@ -1,5 +1,5 @@
 import os
-from backupchan_cli.config import Config
+from backupchan_config import Config
 from backupchan_cli import utility
 
 #

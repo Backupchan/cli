@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.2.1
+
+* Refactored to use the [client connection configuration library](https://github.com/Backupchan/client-config).
+
 ## 0.2.0
 
 * Added command to view stats.
