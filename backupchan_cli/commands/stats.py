@@ -13,7 +13,7 @@ def setup_subcommands(subparser):
 # backupchan stats view
 #
 
-def do_view(args, _, api: API):
+def do_view(args, api: API):
     stats = api.view_stats()
     print(f" | Server version: {stats.program_version}")
     print(f" | Total size of all targets: {utility.humanread_file_size(stats.total_target_size)}")

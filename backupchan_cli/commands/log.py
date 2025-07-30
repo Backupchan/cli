@@ -13,5 +13,5 @@ def setup_subcommands(subparser):
 # backupchan log view
 #
 
-def do_view(args, _, api: API):
+def do_view(args, api: API):
     print(api.get_log(args.tail))

@@ -18,7 +18,7 @@ def setup_subcommands(subparser):
 # backupchan recyclebin view
 #
 
-def do_view(args, _, api: API):
+def do_view(args, api: API):
     try:
         backups = api.list_recycled_backups()
     except requests.exceptions.ConnectionError:
@@ -32,7 +32,7 @@ def do_view(args, _, api: API):
 # backupchan recyclebin clear
 #
 
-def do_clear(args, _, api: API):
+def do_clear(args, api: API):
     try:
         api.clear_recycle_bin(args.delete_files)
     except requests.exceptions.ConnectionError:

@@ -126,7 +126,7 @@ def hr_recycle_criteria(target: BackupTarget) -> str:
 # backupchan target list
 #
 
-def do_list(args, _, api: API):
+def do_list(args, api: API):
     try:
         targets = api.list_targets(args.page)
     except requests.exceptions.ConnectionError:
@@ -146,8 +146,7 @@ def do_list(args, _, api: API):
 # backupchan target view
 #
 
-# TODO is it necessary to pass config to every subcommand?
-def do_view(args, _, api: API):
+def do_view(args, api: API):
     try:
         target, backups = api.get_target(args.id)
     except requests.exceptions.ConnectionError:
@@ -179,7 +178,7 @@ def do_view(args, _, api: API):
 # backupchan target new
 #
 
-def do_new(args, _, api: API):
+def do_new(args, api: API):
     utility.required_args(args, "name", "type", "recycle_criteria", "location", "name_template")
 
     name = args.name
@@ -210,7 +209,7 @@ def do_new(args, _, api: API):
 # backupchan target delete
 #
 
-def do_delete(args, _, api: API):
+def do_delete(args, api: API):
     delete_files = args.delete_files
 
     try:
@@ -225,7 +224,7 @@ def do_delete(args, _, api: API):
 # backupchan target edit
 #
 
-def do_edit(args, _, api: API):
+def do_edit(args, api: API):
     target_id = args.id
 
     try:
@@ -261,7 +260,7 @@ def do_edit(args, _, api: API):
 # backupchan target deletebackups
 #
 
-def do_delete_backups(args, _, api: API):
+def do_delete_backups(args, api: API):
     delete_files = args.delete_files
 
     try:

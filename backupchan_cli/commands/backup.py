@@ -68,7 +68,7 @@ def setup_subcommands(subparser):
 # backupchan backup upload
 #
 
-def do_upload(args, _, api: API):
+def do_upload(args, api: API):
     if os.path.isdir(args.filename):
         try:
             api.upload_backup_folder(args.target_id, args.filename, not args.automatic)
@@ -90,7 +90,7 @@ def do_upload(args, _, api: API):
 # backupchan backup delete
 #
 
-def do_delete(args, _, api: API):
+def do_delete(args, api: API):
     delete_files = args.delete_files
 
     try:
@@ -108,7 +108,7 @@ def do_delete(args, _, api: API):
 # backupchan backup recycle
 #
 
-def do_recycle(args, _, api: API):
+def do_recycle(args, api: API):
     try:
         api.recycle_backup(args.id, True)
     except requests.exceptions.ConnectionError:
@@ -124,7 +124,7 @@ def do_recycle(args, _, api: API):
 # backupchan backup restore
 #
 
-def do_restore(args, _, api: API):
+def do_restore(args, api: API):
     try:
         api.recycle_backup(args.id, False)
     except requests.exceptions.ConnectionError:
