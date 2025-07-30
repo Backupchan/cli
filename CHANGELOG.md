@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.3.0
+
+* Added backup presets
+
 ## 0.2.2
 
 * Refactored to use the API's new directory upload function.
