@@ -70,26 +70,12 @@ def setup_subcommands(subparser):
 
 def do_upload(args, _, api: API):
     if os.path.isdir(args.filename):
-        # Cannot upload a directory to a single-file target.
-        target_type = api.get_target(args.target_id)[0].target_type
-        if target_type == BackupType.SINGLE:
-            utility.failure("Cannot upload directory to a single file target")
-
-        # Make a temporary gzipped tarball containing the directory contents.
-        temp_dir = tempfile.gettempdir()
-        temp_tar_path = os.path.join(temp_dir, f"bakch-{uuid.uuid4().hex}.tar.gz")
-        with tarfile.open(temp_tar_path, "w:gz") as tar:
-            tar.add(args.filename, arcname=os.path.basename(args.filename))
-        
-        # Upload our new tar.
-        with open(temp_tar_path, "rb") as tar:
-            try:
-                api.upload_backup(args.target_id, tar, os.path.basename(args.filename) + ".tar.gz", not args.automatic)
-            except requests.exceptions.ConnectionError:
-                utility.failure_network()
-            except BackupchanAPIError as exc:
-                utility.failure(f"Failed to upload backup: {str(exc)}")
-
+        try:
+            api.upload_backup_folder(args.target_id, args.filename, not args.automatic)
+        except requests.exceptions.ConnectionError:
+            utility.failure_network()
+        except BackupchanAPIError as exc:
+            utility.failure(f"Failed to upload backup: {str(exc)}")
     else:
         with open(args.filename, "rb") as file:
             try:

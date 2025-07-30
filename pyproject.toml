@@ -1,12 +1,12 @@
 [project]
 name = "backupchan-cli"
-version = "0.2.1"
+version = "0.2.2"
 description = "Command-line interface for interacting with Backup-chan."
 authors = [
     { name = "Moltony", email = "koronavirusnyj@gmail.com" }
 ]
 dependencies = [
-    "backupchan-client-lib>=0.2.0",
+    "backupchan-client-lib>=0.3.0",
     "backupchan-client-config>=0.1.0"
 ]
 
@@ -14,7 +14,7 @@ readme = "README.md"
 license = {text = "BSD-3-Clause"}
 
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "License :: OSI Approved :: BSD License",
     "Natural Language :: English",

@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.2.2
+
+* Refactored to use the API's new directory upload function.
+
 ## 0.2.1
 
 * Refactored to use the [client connection configuration library](https://github.com/Backupchan/client-config).
