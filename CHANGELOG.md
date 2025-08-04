@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.3.1
+
+* Updated `backupchan-client-lib` dependency to version 0.3.2.
+
 ## 0.3.0
 
 * Added backup presets
