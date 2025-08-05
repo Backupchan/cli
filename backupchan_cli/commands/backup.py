@@ -43,6 +43,15 @@ def setup_subcommands(subparser):
     #
     #
 
+    download_cmd = subparser.add_parser("download", help="Download a backup")
+    download_cmd.add_argument("id", type=str, help="ID of the backup to dwonload")
+    download_cmd.add_argument("--directory", "-d", type=str, default=".", help="Directory to save downloaded backup to")
+    download_cmd.set_defaults(func=do_download)
+
+    #
+    #
+    #
+
     delete_cmd = subparser.add_parser("delete", help="Delete an existing backup")
     delete_cmd.add_argument("id", type=str, help="ID of the backup to delete")
     delete_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
@@ -85,6 +94,20 @@ def do_upload(args, api: API):
             except BackupchanAPIError as exc:
                 utility.failure(f"Failed to upload backup: {str(exc)}")
     print("Backup uploaded.")
+
+#
+# backupchan backup download
+#
+
+def do_download(args, api: API):
+    try:
+        filename = api.download_backup(args.id, args.directory)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to upload backup: {str(exc)}")
+
+    print(f"Backup saved as '{filename}'.")
 
 #
 # backupchan backup delete

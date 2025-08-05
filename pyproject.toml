@@ -1,12 +1,12 @@
 [project]
 name = "backupchan-cli"
-version = "0.3.1"
+version = "0.4.0"
 description = "Command-line interface for interacting with Backup-chan."
 authors = [
     { name = "Moltony", email = "koronavirusnyj@gmail.com" }
 ]
 dependencies = [
-    "backupchan-client-lib>=0.3.2",
+    "backupchan-client-lib>=0.4.1",
     "backupchan-client-config>=0.1.0",
     "backupchan-presets>=0.1.2"
 ]
