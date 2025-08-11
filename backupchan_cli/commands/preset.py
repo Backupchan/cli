@@ -83,8 +83,8 @@ def do_delete(args, presets: Presets, _):
 #
 
 def do_upload(args, presets: Presets, api: API):
-    presets[args.name].upload(api, not args.automatic)
-    print(f"Backup uploaded with preset '{args.name}'.")
+    job_id = presets[args.name].upload(api, not args.automatic)
+    print(f"Backup uploaded with preset '{args.name}' and is now being processed by job #{job_id}.")
 
 #
 # backupchan preset reset

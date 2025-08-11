@@ -80,7 +80,7 @@ def setup_subcommands(subparser):
 def do_upload(args, api: API):
     if os.path.isdir(args.filename):
         try:
-            api.upload_backup_folder(args.target_id, args.filename, not args.automatic)
+            job_id = api.upload_backup_folder(args.target_id, args.filename, not args.automatic)
         except requests.exceptions.ConnectionError:
             utility.failure_network()
         except BackupchanAPIError as exc:
@@ -93,7 +93,7 @@ def do_upload(args, api: API):
                 utility.failure_network()
             except BackupchanAPIError as exc:
                 utility.failure(f"Failed to upload backup: {str(exc)}")
-    print("Backup uploaded.")
+    print(f"Backup uploaded and is now being processed by job #{job_id}.")
 
 #
 # backupchan backup download

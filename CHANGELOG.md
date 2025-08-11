@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.4.1
+
+* Show what job is currently processing an upload.
+
 ## 0.4.0
 
 * Added backup downloads
