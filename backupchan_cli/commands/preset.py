@@ -39,6 +39,7 @@ def setup_subcommands(subparser):
     upload_cmd = subparser.add_parser("upload", help="Upload a backup according to an existing preset")
     upload_cmd.add_argument("name", type=str, help="Name of the preset to use")
     upload_cmd.add_argument("--automatic", "-a", action="store_true", help="Mark this backup as automatic")
+    upload_cmd.add_argument("--sequential", "-s", action="store_true", help="Upload sequentially")
     upload_cmd.set_defaults(func=do_upload)
 
     #
@@ -83,8 +84,21 @@ def do_delete(args, presets: Presets, _):
 #
 
 def do_upload(args, presets: Presets, api: API):
-    job_id = presets[args.name].upload(api, not args.automatic)
-    print(f"Backup uploaded with preset '{args.name}' and is now being processed by job #{job_id}.")
+    if args.sequential:
+        try:
+            for index, total_files, filename in presets[args.name].seq_upload(api, not args.automatic):
+                print(f"Upload file {index + 1} of {total_files}: {filename}")
+        except requests.exceptions.ConnectionError:
+            utility.failure_network()
+        except BackupchanAPIError as exc:
+            utility.failure(f"Failed to upload backup: {str(exc)}")
+        except Exception as exc:
+            api.seq_terminate(args.target_id)
+            utility.failure(f"Client error: {str(exc)}")
+        print("Backup uploaded.")
+    else:
+        job_id = presets[args.name].upload(api, not args.automatic)
+        print(f"Backup uploaded with preset '{args.name}' and is now being processed by job #{job_id}.")
 
 #
 # backupchan preset reset

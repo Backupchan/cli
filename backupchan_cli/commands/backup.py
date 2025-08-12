@@ -5,7 +5,7 @@ import tarfile
 import tempfile
 import uuid
 from backupchan_cli import utility
-from backupchan import API, BackupchanAPIError, Backup, BackupType
+from backupchan import API, BackupchanAPIError, Backup, BackupType, SequentialFile
 
 #
 # Utilities
@@ -35,6 +35,7 @@ def setup_subcommands(subparser):
     upload_cmd = subparser.add_parser("upload", help="Upload a backup")
     # For things like cron jobs etc. using the cli
     upload_cmd.add_argument("--automatic", "-a", action="store_true", help="Mark backup as having been added automatically")
+    upload_cmd.add_argument("--sequential", "-s", action="store_true", help="Upload each file one-by-one instead of creating an archive (only when uploading directory to multi-file target)")
     upload_cmd.add_argument("target_id", type=str, help="ID of the target to upload backup to")
     upload_cmd.add_argument("filename", type=str, help="Name of the file to upload")
     upload_cmd.set_defaults(func=do_upload)
@@ -80,11 +81,20 @@ def setup_subcommands(subparser):
 def do_upload(args, api: API):
     if os.path.isdir(args.filename):
         try:
-            job_id = api.upload_backup_folder(args.target_id, args.filename, not args.automatic)
+            if args.sequential:
+                sequential_upload(args, api)
+                print("Backup uploaded.")
+                return
+            else:
+                job_id = api.upload_backup_folder(args.target_id, args.filename, not args.automatic)
         except requests.exceptions.ConnectionError:
             utility.failure_network()
         except BackupchanAPIError as exc:
             utility.failure(f"Failed to upload backup: {str(exc)}")
+        except Exception as exc:
+            if args.sequential:
+                api.seq_terminate(args.target_id)
+            utility.failure(f"Client error: {str(exc)}")
     else:
         with open(args.filename, "rb") as file:
             try:
@@ -94,6 +104,34 @@ def do_upload(args, api: API):
             except BackupchanAPIError as exc:
                 utility.failure(f"Failed to upload backup: {str(exc)}")
     print(f"Backup uploaded and is now being processed by job #{job_id}.")
+
+def sequential_upload(args, api: API):
+    # Ensure that it's a directory
+    if not os.path.isdir(args.filename):
+        utility.failure(f"Path '{args.filename}' is not a directory")
+
+    # Build a file list
+    file_list = []
+    for dirpath, _, filenames in os.walk(args.filename):
+        rel_dir = os.path.relpath(dirpath, args.filename)
+        rel_dir = "/" if rel_dir == "." else "/" + rel_dir
+        for filename in filenames:
+            file_list.append(SequentialFile(rel_dir, filename, False))
+    total_files = len(file_list)
+
+    try:
+        api.seq_begin(args.target_id, file_list, not args.automatic)
+    except BackupchanAPIError as exc:
+        if exc.status_code == 400 and "Target busy" in str(exc):
+            print("Upload interrupted, continuing.")
+        else:
+            raise
+    for index, file in enumerate(file_list):
+        full_path = os.path.join(file.path, file.name)
+        print(f"Upload file {index + 1} of {total_files}: {full_path}")
+        with open(os.path.join(args.filename, full_path.lstrip("/")), "rb") as file_io:
+            api.seq_upload(args.target_id, file_io, file)
+    api.seq_finish(args.target_id)
 
 #
 # backupchan backup download
