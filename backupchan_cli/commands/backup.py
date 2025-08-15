@@ -98,7 +98,7 @@ def do_upload(args, api: API):
     else:
         with open(args.filename, "rb") as file:
             try:
-                api.upload_backup(args.target_id, file, os.path.basename(args.filename), not args.automatic)
+                job_id = api.upload_backup(args.target_id, file, os.path.basename(args.filename), not args.automatic)
             except requests.exceptions.ConnectionError:
                 utility.failure_network()
             except BackupchanAPIError as exc:

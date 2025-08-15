@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.5.1
+
+* Fixed single-file uploads raising an error.
+
 ## 0.5.0
 
 * Added support for sequential uploads.
