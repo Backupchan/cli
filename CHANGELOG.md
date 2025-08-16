@@ -2,6 +2,11 @@
 
 See what's changed between versions!
 
+## 0.5.2
+
+* Fixed handling of network errors in preset uplaods.
+* Added continuing interrupted sequential uploads.
+
 ## 0.5.1
 
 * Fixed single-file uploads raising an error.
