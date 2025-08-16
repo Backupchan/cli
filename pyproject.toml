@@ -1,6 +1,6 @@
 [project]
 name = "backupchan-cli"
-version = "0.5.1"
+version = "0.5.2"
 description = "Command-line interface for interacting with Backup-chan."
 authors = [
     { name = "Moltony", email = "koronavirusnyj@gmail.com" }

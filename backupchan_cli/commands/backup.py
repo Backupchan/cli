@@ -124,6 +124,10 @@ def sequential_upload(args, api: API):
     except BackupchanAPIError as exc:
         if exc.status_code == 400 and "Target busy" in str(exc):
             print("Upload interrupted, continuing.")
+            server_file_list = api.seq_check(args.target_id)
+            already_uploaded = [file for file in server_file_list if file.uploaded]
+            file_list = [file for file in file_list if SequentialFile(file.path, file.name, True) not in already_uploaded]
+            total_files = len(file_list)
         else:
             raise
     for index, file in enumerate(file_list):
