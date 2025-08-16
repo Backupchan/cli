@@ -1,6 +1,7 @@
 from backupchan_cli import utility
 from backupchan import API
 from backupchan_presets import Presets, PresetError
+import requests
 
 #
 #
