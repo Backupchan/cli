@@ -85,6 +85,9 @@ def do_delete(args, presets: Presets, _):
 #
 
 def do_upload(args, presets: Presets, api: API):
+    if args.name not in presets:
+        utility.failure(f"Preset '{args.name}' not found")
+
     if args.sequential:
         try:
             for index, total_files, filename in presets[args.name].seq_upload(api, not args.automatic):

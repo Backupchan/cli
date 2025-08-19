@@ -4,6 +4,10 @@ See what's changed between versions!
 
 ## 0.5.2
 
+* Fixed crashing when trying to upload nonexistent preset.
+
+## 0.5.2
+
 * Fixed handling of network errors in preset uplaods.
 * Added continuing interrupted sequential uploads.
 
