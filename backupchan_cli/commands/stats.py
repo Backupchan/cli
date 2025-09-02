@@ -6,7 +6,7 @@ from backupchan_cli import utility
 #
 
 def setup_subcommands(subparser):
-    view_cmd = subparser.add_parser("view", help="View stats")
+    view_cmd = subparser.add_parser("view", aliases=["show"], help="View stats")
     view_cmd.set_defaults(func=do_view)
 
 #

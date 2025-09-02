@@ -43,7 +43,7 @@ def setup_subcommands(subparser):
     #
     #
 
-    view_cmd = subparser.add_parser("view", help="View a specific target")
+    view_cmd = subparser.add_parser("view", aliases=["show"], help="View a specific target")
     view_cmd.add_argument("id", type=str, help="ID of the target to view")
     view_cmd.add_argument("--include-recycled", "-r", action="store_true", help="Include recycled backups too")
     view_cmd.set_defaults(func=do_view)

@@ -14,7 +14,7 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("--api-key", "-a", type=str, help="Backup-chan API key")
     new_cmd.set_defaults(func=do_new)
 
-    view_cmd = subparser.add_parser("view", help="View current configuration")
+    view_cmd = subparser.add_parser("view", aliases=["show"], help="View current configuration")
     view_cmd.set_defaults(func=do_view)
 
     reset_cmd = subparser.add_parser("reset", help="Reset current configuration")

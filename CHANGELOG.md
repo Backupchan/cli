@@ -2,7 +2,11 @@
 
 See what's changed between versions!
 
-## 0.5.2
+## 0.5.4
+
+* Added `show` aliases for every `view` command. This means you can type something like `backupchan target show` instead of `backupchan target view`.
+
+## 0.5.3
 
 * Fixed crashing when trying to upload nonexistent preset.
 
