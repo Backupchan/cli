@@ -7,7 +7,7 @@ from backupchan import API, BackupType, BackupRecycleCriteria, BackupTarget, Bac
 # Utilities
 #
 
-def print_target(target: BackupTarget, spaces: str | None, index: int):
+def print_target_full(target: BackupTarget, spaces: str | None, index: int):
     prefix = "" if spaces is None else f" {spaces} | "
     if spaces is None:
         print(f"Name: {target.name}")
@@ -25,6 +25,32 @@ def print_target(target: BackupTarget, spaces: str | None, index: int):
     print(f"{prefix}Deduplication {'on' if target.deduplicate else 'off'}")
     print("=========")
 
+def print_target_compact(target: BackupTarget, index: int):
+    if target.recycle_criteria == BackupRecycleCriteria.NONE:
+        recycle_criteria_and_action = "None"
+    else:
+        recycle_criteria = hr_recycle_criteria(target)
+        recycle_criteria_lower = recycle_criteria[0].lower() + recycle_criteria[1:]
+        recycle_criteria_and_action = f"{HR_RECYCLE_ACTIONS[target.recycle_action]} {recycle_criteria_lower}"
+    
+    if target.alias is not None:
+        alias_str = f" / alias='{target.alias}'"
+    
+    print(
+        f" {index + 1}. {target.name} ({target.id}{alias_str}) / "
+        f"{HR_TYPES[target.target_type]} / "
+        f"{recycle_criteria_and_action} / "
+        f"{target.location} / "
+        f"{target.name_template} / "
+        f"dedup={'on' if target.deduplicate else 'off'}"
+    )
+
+def print_target(target: BackupTarget, spaces: str | None, index: int, compact: bool):
+    if compact:
+        print_target_compact(target, index)
+    else:
+        print_target_full(target, spaces, index)
+
 #
 #
 #
@@ -37,6 +63,7 @@ def setup_subcommands(subparser):
 
     list_cmd = subparser.add_parser("list", help="List all targets")
     list_cmd.add_argument("--page", "-p", type=int, default=1, help="Page in the list")
+    list_cmd.add_argument("--compact", "-c", action="store_true", help="Show a compact target listing")
     list_cmd.set_defaults(func=do_list)
 
     #
@@ -140,7 +167,7 @@ def do_list(args, api: API):
 
     for index, target in enumerate(targets):
         spaces = " " * (len(str(index + 1)) + 1)
-        print_target(target, spaces, index)
+        print_target(target, spaces, index, args.compact)
 
 #
 # backupchan target view
@@ -156,7 +183,7 @@ def do_view(args, api: API):
             utility.failure("Target not found")
         raise
 
-    print_target(target, None, 0)
+    print_target(target, None, 0, False)
 
     if len(backups) == 0:
         print("This target has no backups.")

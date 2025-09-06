@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.6.0
+
+* Added compact target listing (`backupchan target list --compact`)
+
 ## 0.5.4
 
 * Added `show` aliases for every `view` command. This means you can type something like `backupchan target show` instead of `backupchan target view`.
