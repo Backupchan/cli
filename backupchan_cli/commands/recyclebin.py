@@ -25,8 +25,7 @@ def do_view(args, api: API):
         utility.failure_network()
 
     for index, backup in enumerate(backups):
-        spaces = " " * (len(str(index + 1)) + 1)
-        print_backup(backup, spaces, False, index)
+        print_backup(backup, False, index)
 
 #
 # backupchan recyclebin clear

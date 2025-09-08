@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.7.0
+
+* Changed backup listing to be compact.
+
 ## 0.6.0
 
 * Added compact target listing (`backupchan target list --compact`)

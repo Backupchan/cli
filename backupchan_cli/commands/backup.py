@@ -11,17 +11,9 @@ from backupchan import API, BackupchanAPIError, Backup, BackupType, SequentialFi
 # Utilities
 #
 
-def print_backup(backup: Backup, spaces: str, show_recycled: bool, index: int):
-    print(f" {index + 1}. | ID: {backup.id}")
-    print(f" {spaces} | Created at: {backup.pretty_created_at()}")
-    if show_recycled:
-        print(f" {spaces} | Recycled: {'Yes' if backup.is_recycled else 'No'}")
-    print(f" {spaces} | Size: {utility.humanread_file_size(backup.filesize)}")
-    if backup.manual:
-        print(f" {spaces} | Uploaded manually")
-    else:
-        print(f" {spaces} | Uploaded automatically")
-    print("=========")
+def print_backup(backup: Backup, show_recycled: bool, index: int):
+    recycled_str = " | recycled" if backup.is_recycled and show_recycled else ""
+    print(f" {index + 1}. | ID: {backup.id} | created {backup.pretty_created_at()}{recycled_str} | {utility.humanread_file_size(backup.filesize)} | Uploaded {'manually' if backup.manual else 'automatic'}")
 
 #
 #

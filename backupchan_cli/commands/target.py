@@ -198,8 +198,7 @@ def do_view(args, api: API):
         backups = [backup for backup in backups if not backup.is_recycled]
 
     for index, backup in enumerate(backups):
-        spaces = " " * (len(str(index + 1)) + 1)
-        print_backup(backup, spaces, args.include_recycled, index)
+        print_backup(backup, args.include_recycled, index)
 
 #
 # backupchan target new
