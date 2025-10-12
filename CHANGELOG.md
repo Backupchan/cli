@@ -2,6 +2,11 @@
 
 See what's changed between versions!
 
+## 0.8.0
+
+* Added command to delete target recycled backups (`backupchan target deleterecycled`).
+* Added message if no backups found in the recycle bin.
+
 ## 0.7.0
 
 * Changed backup listing to be compact.
