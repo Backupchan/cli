@@ -24,6 +24,9 @@ def do_view(args, api: API):
     except requests.exceptions.ConnectionError:
         utility.failure_network()
 
+    if len(backups) == 0:
+        print("There are no backups in the recycle bin.")
+
     for index, backup in enumerate(backups):
         print_backup(backup, False, index)
 
