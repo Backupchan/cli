@@ -126,6 +126,16 @@ def setup_subcommands(subparser):
     delete_backups_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
     delete_backups_cmd.set_defaults(func=do_delete_backups)
 
+
+    #
+    #
+    #
+
+    delete_recycled_cmd = subparser.add_parser("deleterecycled", help="Delete all recycled backups of a target")
+    delete_recycled_cmd.add_argument("id", type=str, help="ID of the target to delete recycled backups of")
+    delete_recycled_cmd.add_argument("--delete-files", "-d", action="store_true", help="Delete backup files as well")
+    delete_recycled_cmd.set_defaults(func=do_delete_recycled)
+
 #
 # Value to human-readable string conversions and lookup tables
 #
@@ -296,3 +306,18 @@ def do_delete_backups(args, api: API):
     except BackupchanAPIError as exc:
         utility.failure(f"Failed to delete target backups: {str(exc)}")
     print("Target backups deleted.")
+
+#
+# backupchan target deleterecycled
+#
+
+def do_delete_recycled(args, api: API):
+    delete_files = args.delete_files
+
+    try:
+        api.delete_target_recycled_backups(args.id, delete_files)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to delete target recycled backups: {str(exc)}")
+    print("Target recycled backups deleted.")
