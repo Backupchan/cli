@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.9.0
+
+* Added commands for accessing jobs.
+
 ## 0.8.0
 
 * Added command to delete target recycled backups (`backupchan target deleterecycled`).

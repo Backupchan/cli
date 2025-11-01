@@ -1,4 +1,4 @@
-from .commands import config, target, backup, log, recyclebin, stats, preset
+from .commands import config, target, backup, log, recyclebin, stats, preset, job
 from .utility import failure, NO_CONFIG_MESSAGE
 from backupchan_config import Config, ConfigException
 from backupchan_presets import Presets
@@ -36,6 +36,10 @@ def main():
     preset_parser = subparsers.add_parser("preset")
     preset_sub = preset_parser.add_subparsers(dest="subcommand", help="View, manage and run backup presets")
     preset.setup_subcommands(preset_sub)
+
+    job_parser = subparsers.add_parser("job")
+    job_sub = job_parser.add_subparsers(dest="subcommand", help="View and manage jobs")
+    job.setup_subcommands(job_sub)
 
     backup_presets = Presets()
     backup_presets.load()
