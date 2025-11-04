@@ -89,6 +89,7 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("--name-template", "-m", type=str, help="Name template for backups. Must include either $I or $D, or both.")
     new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="(optional) Enable deduplication")
     new_cmd.add_argument("--alias", type=str, help="(optional) Target alias. It can be used as the ID.")
+    new_cmd.add_argument("--min-backups", type=int, help="(optional) Minimum number of backups to keep. Only applicable if recycle criteria is 'age'.")
     new_cmd.set_defaults(func=do_new)
 
     #
@@ -115,6 +116,7 @@ def setup_subcommands(subparser):
     edit_cmd.add_argument("--toggle-deduplication", "-d", action="store_true", help="Toggle target deduplication")
     edit_cmd.add_argument("--alias", type=str, help="Target alias")
     edit_cmd.add_argument("--remove-alias", action="store_true", help="Remove alias from the target if it has one")
+    edit_cmd.add_argument("--min-backups", type=int, help="Minimum number of backups to keep")
     edit_cmd.set_defaults(func=do_edit)
 
     #
@@ -154,6 +156,8 @@ def hr_recycle_criteria(target: BackupTarget) -> str:
     if target.recycle_criteria == BackupRecycleCriteria.NONE:
         return "None"
     elif target.recycle_criteria == BackupRecycleCriteria.AGE:
+        if target.min_backups:
+            return f"After {target.recycle_value} days (keep at least {target.min_backups} backups)"
         return f"After {target.recycle_value} days"
     elif target.recycle_criteria == BackupRecycleCriteria.COUNT:
         return f"After {target.recycle_value} copies"
@@ -224,6 +228,7 @@ def do_new(args, api: API):
     name_template = args.name_template
     deduplicate = args.deduplicate
     alias = args.alias
+    min_backups = args.min_backups
 
     recycle_value = 0
     recycle_action = BackupRecycleAction.RECYCLE
@@ -233,7 +238,7 @@ def do_new(args, api: API):
         recycle_action = args.recycle_action
 
     try:
-        target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias)
+        target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias, min_backups)
     except requests.exceptions.ConnectionError:
         utility.failure_network()
     except BackupchanAPIError as exc:
@@ -282,9 +287,10 @@ def do_edit(args, api: API):
     if args.toggle_deduplication:
         deduplicate = not deduplicate
     alias = (None if args.remove_alias else args.alias) or target.alias
+    min_backups = args.min_backups or target.min_backups
 
     try:
-        api.edit_target(target_id, name, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias)
+        api.edit_target(target_id, name, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias, min_backups)
     except requests.exceptions.ConnectionError:
         utility.failure_network()
     except BackupchanAPIError as exc:
