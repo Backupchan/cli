@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.10.0
+
+* Added support for minimum backups.
+
 ## 0.9.0
 
 * Added commands for accessing jobs.
