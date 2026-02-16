@@ -9,6 +9,10 @@ def main():
     parser = argparse.ArgumentParser(prog="backupchan")
     subparsers = parser.add_subparsers(dest="command")
 
+    parser.add_argument("--host", type=str, help="Override the server hostname")
+    parser.add_argument("--port", type=int, help="Override the server port number")
+    parser.add_argument("--api-key", type=str, help="Override the API key")
+
     config_parser = subparsers.add_parser("config")
     config_sub = config_parser.add_subparsers(dest="subcommand", help="View and edit configuration")
     config.setup_subcommands(config_sub)
@@ -54,6 +58,9 @@ def main():
     api = None if app_config.is_incomplete() else API(app_config.host, app_config.port, app_config.api_key)
 
     args = parser.parse_args()
+    if args.host or args.port or args.api_key:
+        api = API(args.host or app_config.host, args.port or app_config.port, args.api_key or app_config.api_key)
+
     if hasattr(args, "func"):
         if args.command != "config" and app_config.is_incomplete():
             failure(NO_CONFIG_MESSAGE)
