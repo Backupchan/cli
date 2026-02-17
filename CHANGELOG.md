@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.12.0
+
+* Added support for renaming presets.
+
 ## 0.11.0
 
 * Added options to override server host and API key.

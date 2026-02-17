@@ -37,6 +37,15 @@ def setup_subcommands(subparser):
     #
     #
 
+    rename_cmd = subparser.add_parser("rename", help="Rename an existing preset")
+    rename_cmd.add_argument("old_name", type=str, help="Current name of the preset")
+    rename_cmd.add_argument("new_name", type=str, help="Rename preset to this name")
+    rename_cmd.set_defaults(func=do_rename)
+
+    #
+    #
+    #
+
     upload_cmd = subparser.add_parser("upload", help="Upload a backup according to an existing preset")
     upload_cmd.add_argument("name", type=str, help="Name of the preset to use")
     upload_cmd.add_argument("--automatic", "-a", action="store_true", help="Mark this backup as automatic")
@@ -79,6 +88,18 @@ def do_delete(args, presets: Presets, _):
     presets.remove(args.name)
     presets.save()
     print("Preset deleted.")
+
+#
+# backupchan preset rename
+#
+
+def do_rename(args, presets: Presets, _):
+    try:
+        presets.rename(args.old_name, args.new_name)
+    except PresetError as exc:
+        utility.failure(f"Failed to rename: {str(exc)}")
+    presets.save()
+    print(f"Renamed preset '{args.old_name}' to '{args.new_name}'.")
 
 #
 # backupchan preset upload
