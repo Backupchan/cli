@@ -35,6 +35,8 @@ def print_target_compact(target: BackupTarget, index: int):
     
     if target.alias is not None:
         alias_str = f" / alias='{target.alias}'"
+    else:
+        alias_str = f""
     
     print(
         f" {index + 1}. {target.name} ({target.id}{alias_str}) / "

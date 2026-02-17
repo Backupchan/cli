@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.12.1
+
+* Fixed crashing when listing target without alias in compact mode.
+
 ## 0.12.0
 
 * Added support for renaming presets.
