@@ -92,7 +92,7 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("--location", "-l", type=str, help="Location of the new target")
     new_cmd.add_argument("--name-template", "-m", type=str, help="Name template for backups. Must include either $I or $D, or both.")
     new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="(optional) Enable deduplication")
-    new_cmd.add_argument("--alias", type=str, help="(optional) Target alias. It can be used as the ID.")
+    new_cmd.add_argument("--alias", "-s", type=str, help="(optional) Target alias. It can be used as the ID.")
     new_cmd.add_argument("--min-backups", type=int, help="(optional) Minimum number of backups to keep. Only applicable if recycle criteria is 'age'.")
     new_cmd.add_argument("--tags", type=str, help="(optional) Target tags, separated with commas")
     new_cmd.set_defaults(func=do_new)
@@ -119,12 +119,27 @@ def setup_subcommands(subparser):
     edit_cmd.add_argument("--location", "-l", type=str, help="New location of the target")
     edit_cmd.add_argument("--name-template", "-m", type=str, help="New name template of the target")
     edit_cmd.add_argument("--toggle-deduplication", "-d", action="store_true", help="Toggle target deduplication")
-    edit_cmd.add_argument("--alias", type=str, help="Target alias")
+    edit_cmd.add_argument("--alias", "-s", type=str, help="Target alias")
     edit_cmd.add_argument("--remove-alias", action="store_true", help="Remove alias from the target if it has one")
     edit_cmd.add_argument("--min-backups", type=int, help="Minimum number of backups to keep")
     edit_cmd.add_argument("--tags", type=str, help="New target tags")
     edit_cmd.add_argument("--clear-tags", action="store_true", help="Clear all tags from the target, if any")
     edit_cmd.set_defaults(func=do_edit)
+
+    #
+    #
+    #
+    
+    search_cmd = subparser.add_parser("search", help="Search targets")
+    search_cmd.add_argument("--name", "-n", type=str, help="Search by name")
+    search_cmd.add_argument("--recycle-criteria", "-c", type=lambda c: BackupRecycleCriteria(c), choices=list(BackupRecycleCriteria), help="Search by recycle criteria")
+    search_cmd.add_argument("--recycle-action", "-a", type=lambda a: BackupRecycleAction(a), choices=list(BackupRecycleAction), help="Search by recycle action")
+    search_cmd.add_argument("--location", "-l", type=str, help="Search by location")
+    search_cmd.add_argument("--name-template", "-m", type=str, help="Search by name template")
+    search_cmd.add_argument("--deduplicate", "-d", type=str, choices=["on", "off"], help="Search by deduplication")
+    search_cmd.add_argument("--alias", "-s", type=str, help="Search by alias")
+    search_cmd.add_argument("--tags", type=str, help="Search by tags (separate with commas)")
+    search_cmd.set_defaults(func=do_search)
 
     #
     #
@@ -311,6 +326,30 @@ def do_edit(args, api: API):
         utility.failure(f"Failed to edit target: {str(exc)}")
 
     print("Target edited.")
+
+#
+# backupchan target search
+#
+
+def do_search(args, api: API):
+    name = args.name
+    recycle_criteria = args.recycle_criteria
+    recycle_action = args.recycle_action
+    location = args.location
+    name_template = args.name_template
+    deduplicate = args.deduplicate
+    alias = args.alias
+    tags = [] if not args.tags else args.tags.split(",")
+
+    try:
+        results = api.search_targets(name, recycle_criteria, recycle_action, location, name_template, deduplicate, alias, tags)
+        print(f"{len(results)} target{'s' if len(results) != 1 else ''} matched your search.")
+        for i, result in enumerate(results):
+            print_target_compact(result, i)
+    except requests.exceptions.ConnectionError:
+        utility.failure_network()
+    except BackupchanAPIError as exc:
+        utility.failure(f"Failed to search targets: {str(exc)}")
 
 #
 # backupchan target deletebackups
