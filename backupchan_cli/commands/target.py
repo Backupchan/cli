@@ -23,6 +23,7 @@ def print_target_full(target: BackupTarget, spaces: str | None, index: int):
     print(f"{prefix}Location: {target.location}")
     print(f"{prefix}Name template: {target.name_template}")
     print(f"{prefix}Deduplication {'on' if target.deduplicate else 'off'}")
+    print(f"{prefix}Tags: {'None' if not target.tags else ', '.join(target.tags)}")
     print("=========")
 
 def print_target_compact(target: BackupTarget, index: int):
@@ -45,6 +46,7 @@ def print_target_compact(target: BackupTarget, index: int):
         f"{target.location} / "
         f"{target.name_template} / "
         f"dedup={'on' if target.deduplicate else 'off'}"
+        f"{'' if not target.tags else ' / ' + ', '.join(target.tags)}"
     )
 
 def print_target(target: BackupTarget, spaces: str | None, index: int, compact: bool):
@@ -92,6 +94,7 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("--deduplicate", "-d", action="store_true", help="(optional) Enable deduplication")
     new_cmd.add_argument("--alias", type=str, help="(optional) Target alias. It can be used as the ID.")
     new_cmd.add_argument("--min-backups", type=int, help="(optional) Minimum number of backups to keep. Only applicable if recycle criteria is 'age'.")
+    new_cmd.add_argument("--tags", type=str, help="(optional) Target tags, separated with commas")
     new_cmd.set_defaults(func=do_new)
 
     #
@@ -119,6 +122,8 @@ def setup_subcommands(subparser):
     edit_cmd.add_argument("--alias", type=str, help="Target alias")
     edit_cmd.add_argument("--remove-alias", action="store_true", help="Remove alias from the target if it has one")
     edit_cmd.add_argument("--min-backups", type=int, help="Minimum number of backups to keep")
+    edit_cmd.add_argument("--tags", type=str, help="New target tags")
+    edit_cmd.add_argument("--clear-tags", action="store_true", help="Clear all tags from the target, if any")
     edit_cmd.set_defaults(func=do_edit)
 
     #
@@ -231,6 +236,7 @@ def do_new(args, api: API):
     deduplicate = args.deduplicate
     alias = args.alias
     min_backups = args.min_backups
+    tags = ",".split("" if not args.tags else args.tags)
 
     recycle_value = 0
     recycle_action = BackupRecycleAction.RECYCLE
@@ -240,7 +246,7 @@ def do_new(args, api: API):
         recycle_action = args.recycle_action
 
     try:
-        target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias, min_backups)
+        target_id = api.new_target(name, target_type, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias, min_backups, tags)
     except requests.exceptions.ConnectionError:
         utility.failure_network()
     except BackupchanAPIError as exc:
@@ -290,9 +296,15 @@ def do_edit(args, api: API):
         deduplicate = not deduplicate
     alias = (None if args.remove_alias else args.alias) or target.alias
     min_backups = args.min_backups or target.min_backups
+    if args.tags:
+        tags = args.tags.split(",")
+    elif args.clear_tags:
+        tags = []
+    else:
+        tags = target.tags
 
     try:
-        api.edit_target(target_id, name, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias, min_backups)
+        api.edit_target(target_id, name, recycle_criteria, recycle_value, recycle_action, location, name_template, deduplicate, alias, min_backups, tags)
     except requests.exceptions.ConnectionError:
         utility.failure_network()
     except BackupchanAPIError as exc:
