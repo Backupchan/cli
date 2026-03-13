@@ -2,6 +2,11 @@
 
 See what's changed between versions!
 
+## 0.13.0
+
+* Added support for target tags.
+* Added searching targets.
+
 ## 0.12.1
 
 * Fixed crashing when listing target without alias in compact mode.
