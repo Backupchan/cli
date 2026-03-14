@@ -29,7 +29,7 @@ def setup_subcommands(subparser):
     upload_cmd.add_argument("--automatic", "-a", action="store_true", help="Mark backup as having been added automatically")
     upload_cmd.add_argument("--sequential", "-s", action="store_true", help="Upload each file one-by-one instead of creating an archive (only when uploading directory to multi-file target)")
     upload_cmd.add_argument("--exclude", "-e", type=str, nargs="+", action="extend", help="Exclude paths from sequential upload (supports wildcards; mutually exclusve with --include)")
-    upload_cmd.add_argument("--include", "-i", type=str, nargs="+", action="extend", help="Include only these paths from sequential upload (supports wildcards; mutually exclusive with --exclude)")
+    upload_cmd.add_argument("--include", "-i", type=str, nargs="+", action="extend", help="Include only these paths in sequential upload (supports wildcards; mutually exclusive with --exclude)")
     upload_cmd.add_argument("target_id", type=str, help="ID of the target to upload backup to")
     upload_cmd.add_argument("filename", type=str, help="Name of the file to upload")
     upload_cmd.set_defaults(func=do_upload)
