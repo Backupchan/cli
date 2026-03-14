@@ -4,6 +4,13 @@ from backupchan_presets import Presets, PresetError
 import requests
 
 #
+# Utility functions
+#
+
+def separated_path_list(paths: list[str]) -> str:
+    return '; '.join([f"'{path}'" for path in paths])
+
+#
 #
 #
 
@@ -23,6 +30,8 @@ def setup_subcommands(subparser):
     new_cmd.add_argument("name", type=str, help="Name of the new preset. Must be unique.")
     new_cmd.add_argument("location", type=str, help="Path to file or directory to back up")
     new_cmd.add_argument("target_id", type=str, help="ID of the target to upload backups to")
+    new_cmd.add_argument("--exclude", "-e", type=str, nargs="+", action="extend", help="Exclude paths (supports wildcards; mutually exclusve with --include)")
+    new_cmd.add_argument("--include", "-i", type=str, nargs="+", action="extend", help="Include only these paths (supports wildcards; mutually exclusive with --exclude)")
     new_cmd.set_defaults(func=do_new)
 
     #
@@ -66,17 +75,26 @@ def setup_subcommands(subparser):
 def do_list(args, presets: Presets, _):
     if len(presets) == 0:
         print("There are no presets.")
+        return
 
     for preset_name in presets:
         preset = presets[preset_name]
-        print(f" | '{preset_name}' - location: '{preset.location}', target: '{preset.target_id}'")
+        print(f" | '{preset_name}' - location: '{preset.location}', target: '{preset.target_id}'", end="")
+        if preset.exclude:
+            print(f", exclude: {separated_path_list(preset.exclude)}")
+        elif preset.include:
+            print(f", include: {separated_path_list(preset.include)}")
+        else:
+            print()
 
 #
 # backupchan preset new
 #
 
 def do_new(args, presets: Presets, _):
-    presets.add(args.name, args.location, args.target_id)
+    if args.exclude and args.include:
+        utility.failure("Exclude and include patterns cannot be used together")
+    presets.add(args.name, args.location, args.target_id, args.exclude, args.include)
     presets.save()
     print("Preset saved.")
 

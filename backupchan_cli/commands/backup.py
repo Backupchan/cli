@@ -28,6 +28,8 @@ def setup_subcommands(subparser):
     # For things like cron jobs etc. using the cli
     upload_cmd.add_argument("--automatic", "-a", action="store_true", help="Mark backup as having been added automatically")
     upload_cmd.add_argument("--sequential", "-s", action="store_true", help="Upload each file one-by-one instead of creating an archive (only when uploading directory to multi-file target)")
+    upload_cmd.add_argument("--exclude", "-e", type=str, nargs="+", action="extend", help="Exclude paths from sequential upload (supports wildcards; mutually exclusve with --include)")
+    upload_cmd.add_argument("--include", "-i", type=str, nargs="+", action="extend", help="Include only these paths in sequential upload (supports wildcards; mutually exclusive with --exclude)")
     upload_cmd.add_argument("target_id", type=str, help="ID of the target to upload backup to")
     upload_cmd.add_argument("filename", type=str, help="Name of the file to upload")
     upload_cmd.set_defaults(func=do_upload)
@@ -98,6 +100,10 @@ def do_upload(args, api: API):
     print(f"Backup uploaded and is now being processed by job #{job_id}.")
 
 def sequential_upload(args, api: API):
+    # Exclude and include are mutually exclusive
+    if args.exclude and args.include:
+        utility.failure("Exclude and include option cannot be used together")
+
     # Ensure that it's a directory
     if not os.path.isdir(args.filename):
         utility.failure(f"Path '{args.filename}' is not a directory")
@@ -108,6 +114,11 @@ def sequential_upload(args, api: API):
         rel_dir = os.path.relpath(dirpath, args.filename)
         rel_dir = "/" if rel_dir == "." else "/" + rel_dir
         for filename in filenames:
+            file_path = os.path.join(rel_dir, filename)
+            if args.exclude and utility.fnmatch_any(file_path, args.exclude):
+                continue
+            elif args.include and not utility.fnmatch_any(file_path, args.include):
+                continue
             file_list.append(SequentialFile(rel_dir, filename, False))
     total_files = len(file_list)
 

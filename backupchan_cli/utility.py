@@ -1,4 +1,5 @@
 import sys
+import fnmatch
 
 NO_CONFIG_MESSAGE = "No configuration. Run `backupchan config new' to configure."
 
@@ -31,3 +32,6 @@ def required_args(args_object, *args):
     for arg in args:
         if not getattr(args_object, arg):
             failure(f"Argument '{arg}' is required")
+
+def fnmatch_any(filename: str, patterns: list[str]) -> bool:
+    return any(fnmatch.fnmatch(filename, pattern) for pattern in patterns)
