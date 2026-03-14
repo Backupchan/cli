@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.14.0
+
+* Added exclusion and inclusion patterns for sequential uploads.
+
 ## 0.13.0
 
 * Added support for target tags.
