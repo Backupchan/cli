@@ -8,7 +8,7 @@ authors = [
 dependencies = [
     "backupchan-client-lib>=1.5.1",
     "backupchan-client-config>=0.1.0",
-    "backupchan-presets>=0.3.0"
+    "backupchan-presets>=0.4.0"
 ]
 
 readme = "README.md"
