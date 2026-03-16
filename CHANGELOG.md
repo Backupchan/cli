@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.14.1
+
+* Updated `backupchan-presets` dependency version to 0.4.1.
+
 ## 0.14.0
 
 * Added exclusion and inclusion patterns for sequential uploads.
