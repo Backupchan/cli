@@ -2,6 +2,10 @@
 
 See what's changed between versions!
 
+## 0.14.2
+
+* Fixed errors when the preset command fails.
+
 ## 0.14.1
 
 * Updated `backupchan-presets` dependency version to 0.4.1.
