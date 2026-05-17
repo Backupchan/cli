@@ -1,5 +1,5 @@
 from backupchan_cli import utility
-from backupchan import API
+from backupchan import API, BackupchanAPIError
 from backupchan_presets import Presets, PresetError
 import requests
 
@@ -136,7 +136,7 @@ def do_upload(args, presets: Presets, api: API):
         except BackupchanAPIError as exc:
             utility.failure(f"Failed to upload backup: {str(exc)}")
         except Exception as exc:
-            api.seq_terminate(args.target_id)
+            api.seq_terminate(presets[args.name].target_id)
             utility.failure(f"Client error: {str(exc)}")
         print("Backup uploaded.")
     else:
